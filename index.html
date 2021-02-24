@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+	<style>
+		.jconfirm .jconfirm-scrollpane {
+		    width: 25%;
+		    margin: auto;
+		}
+	</style>	
+	<title>Document</title>
+</head>
+<body>
+	<input type="number" id="startNum" min = "1" max = "25" value="1"><br>
+	<label for="startNum"></label><br>
+	<input type="number" id="endNum" min = "1" max = "30" value="1"><br>
+	<label for="endNum"></label><br>
+	<input type="button" value="Սկիզբ" id="start">
+	<input type="button" value="Հաջորդը" id="button">
+	<p id="boc">0</p>
+	<p id="tver">0</p>
+
+	<script>
+		$(document).ready(function(){	
+			let startError = $('label[for="startNum"]'); 
+			let endError = $('label[for="endNum"]');
+			let val = false;
+			let val1 = false;
+			let startNumber;
+			let endNumber;
+			let start;
+			let end;
+		
+
+			$('#button').hide();
+			
+			let numberArray;
+			function arrayNumber(start,end){
+				let myArray = [];
+				for(let i = start; i<= end; i++){
+					myArray.push(i);
+				}
+				return myArray;
+			}
+
+			function getRandom(min,max){
+				let num1 = max - min + 1;
+				let num2 = Math.random() * num1;
+				let result = Math.floor(num2) + min;
+				return result;
+			}
+			$('#start').click(function (){
+				start = $('#startNum').val() ;
+				end = $('#endNum').val() ; 
+				if(+start == ''){
+					startError.text("Խնդրում ենք մուտքագրել մեկնարկային թիվը");
+					val = false;
+				}else{
+					if(+start < 0){
+						startError.text("Խնդրում ենք մուտքագրել 0-ից մեծ թիվ");
+						val = false;
+					} else if (+start >= 25){
+						startError.text("Խնդրում ենք մուտքագրել 0-ից մեծ և 25-ից պոքր թիվ");
+						val = false;
+					}else{
+						startNumber = start;
+						startError.text("");
+						val = true;
+					}
+				}
+				if(+end == ''){
+					endError.text("Խնդրում ենք մուտքագրել վերջնական թիվը");
+					val1 = false;
+				}else{
+					if(+end > 30){
+						endError.text("Խնդրում ենք մուտքագրել 30-ից պոքր թիվ");
+						val1 = false;
+					} else if (+end < 0){
+						endError.text("Խնդրում ենք մուտքագրել 0-ից մեծ թիվ");
+						val1 = false;
+					}else if (+end <= +start){
+						endError.text("Խնդրում ենք մուտքագրել " + start + " -ից մեծ և 30-ից պոքր թիվ");
+						val1 = false;
+					}else{
+						endNumber = end;
+						endError.text("");
+						val1 = true;
+					}
+				}
+				if(val && val1){
+					numberArray = arrayNumber(+startNumber,+endNumber);
+					$('#tver').text(numberArray);
+					$('#button').show(500);
+					$('#startNum').hide(500);
+					$('#endNum').hide(500);
+					$('#start').hide(500); 
+				}
+			});
+
+			$('#button').click(function(){
+				if(numberArray.length == 0){
+					$.confirm({
+					    title: 'Confirm',
+					    content: 'Ձեր զանգվածն ավարտված է, սկսենք նորից նույն տվյալներով???',
+					    typeAnimated: true,
+					    buttons: {
+					        Retry:function () {
+						            numberArray = arrayNumber(+startNumber,+endNumber);
+									$('#boc').text('0');
+									$('#tver').text(numberArray);
+						        },
+					        cancel: function () {
+					            $('#button').hide(500);
+								$('#startNum').show(500);
+								$('#endNum').show(500);
+								$('#start').show(500); 
+					        }
+					    }
+					});	
+				}else{
+					let randomIndex = getRandom(0,numberArray.length-1);
+					let randomNumber = numberArray[randomIndex];
+					numberArray.splice(randomIndex, 1);
+					$('#boc').text(randomNumber);
+					$('#tver').text(numberArray);
+				}
+			})		
+			
+		});
+	</script>
+</body>
+</html>
